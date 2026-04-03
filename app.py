@@ -30,24 +30,27 @@ For example, if they ask about Physics, give them a brief answer but end with: "
 If a student asks something outside of Olympiads or standard Pakistani high school academics (like F.Sc or A-Levels), politely guide them back to NSTC topics.
 If you don't know an exact answer, suggest they check the "Community Resources" board on the website.
 """
+@app.route("/",methods=['GET'])
+def hello():
+    return jsonify({"message":"Hello! Welcome to the site"})
 
 @app.route('/chat', methods=['POST'])
 def chat():
     user_message = request.json.get('message')
-    
+
     if not user_message:
         return jsonify({"error": "No message provided"}), 400
 
+    combined_input = f"{system_instruction}\n\nUser: {user_message}"
+
     try:
         response = client.models.generate_content(
-            model='gemini-2.5-flash',
-            contents=user_message,
-            config=types.GenerateContentConfig(
-                system_instruction=system_instruction,
-            )
+            model='gemma-3-27b-it',
+            contents=combined_input
         )
+        
         return jsonify({"reply": response.text})
-    
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
