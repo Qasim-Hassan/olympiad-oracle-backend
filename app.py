@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 from google import genai
 from google.genai import types
@@ -10,6 +10,7 @@ CORS(app)
 
 # Securely fetch the API key from the environment variables
 api_key = os.environ.get("GEMINI_API_KEY")
+
 
 # Initialize the client with the secured key
 if api_key:
@@ -33,20 +34,36 @@ If you don't know an exact answer, suggest they check the "Community Resources" 
 
 @app.route('/chat', methods=['POST'])
 def chat():
-    user_message = request.json.get('message')
-    
+    # user_message = request.json.get('message')
+    user_message = input("User:")
     if not user_message:
         return jsonify({"error": "No message provided"}), 400
 
+    chat = []
+    chat_history.append(f"User: {user_message}")
+
+    if len(chat_history) == 1:
+        combined_input = f"{system_instruction}\n\nUser: {user_message}"
+    else:
+        #Making sure only last 3 messages from chat are in the context windows
+        chat_history = chat_history[-3:]
+
+        combined_input = "\n".join(chat_history)
+
     try:
         response = client.models.generate_content(
-            model='gemini-2.5-flash',
-            contents=user_message,
-            config=types.GenerateContentConfig(
-                system_instruction=system_instruction,
-            )
+            model='gema-3-4b-it',
+            contents=combined_input
         )
-        return jsonify({"reply": response.text})
+        # return jsonify({"reply": response.text})
+
+        #Adding oracle's reply in the chat context
+        bot_reply = response.text
+        
+        chat_history.append(f"Oracle: {bot_reply}")
+        chat_history = chat_history[-3:]
+        print(f"AI:{response.text}")
+        return 201
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -54,4 +71,5 @@ def chat():
 # Cloud servers provide a 'PORT' variable. If not, it defaults to 5000 for local testing.
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
+    chat()
     app.run(host='0.0.0.0', port=port)
