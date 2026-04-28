@@ -5,7 +5,7 @@ from google import genai
 from google.genai import types
 
 app = Flask(__name__)
-# Allow your frontend website to talk to this backend
+# Allowing frontend website to talk to this backend
 CORS(app) 
 
 # Securely fetch the API key from the environment variables
