@@ -5,8 +5,14 @@ from google import genai
 from google.genai import types
 
 app = Flask(__name__)
-# Allow your frontend website to talk to this backend
-CORS(app) 
+# Allowing frontend website to talk to this backend
+# But making sure only our website can access the backend
+
+CORS(app,resources={
+    r"/*": {
+        "origins":"https://olympiadhub-pk.netlify.app"
+    }
+}) 
 
 # Securely fetch the API key from the environment variables
 api_key = os.environ.get("GEMINI_API_KEY")
