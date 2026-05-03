@@ -9,7 +9,7 @@ Written in python, it serves the AI-model for the olympiad oracle on the site.
 
 Clone the repository, run:
 
-> pip install Flask
+> pip install -r requirements.txt
 
 to install flask. Then run the app with:
 
