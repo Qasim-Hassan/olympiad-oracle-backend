@@ -10,7 +10,7 @@ app = Flask(__name__)
 
 CORS(app,resources={
     r"/*": {
-        "origins":"*"
+        "origins":"https://olympiadhub-pk.netlify.app"
     }
 }) 
 
@@ -72,9 +72,27 @@ def chat():
     if not user_message:
         return jsonify({"error": "No message provided"}), 400
 
+    
+    bot_id = data.get("bot_id", 1)  # Default to bot 1 (Oracle) if not provided
+
     try:
+        # ==========================================
+        # BOT 1: ORACLE (Uses client_oracle)
+        # ==========================================
+        if (bot_id == 1):
+            system_instruction_oracle = getSystemPrompt(bot_id=1)
+
+            combined_input = f"{system_instruction_oracle}\n\nUser: {user_message}"
+
+            response = client_oracle.models.generate_content(
+                model='gemma-3-27b-it',
+                contents=combined_input
+            )
+            
+            return jsonify({"reply": response.text})
+        
         # BOT 2: AI TUTOR (Uses client_tutor)
-        if (data.get("bot_id") == 2):
+        elif (bot_id == 2):
             
             subject = data.get("subject")
             if subject:
@@ -92,19 +110,7 @@ def chat():
             
             return jsonify({"reply": response.text})
         else:
-        # ==========================================
-        # BOT 1: ORACLE (Uses client_oracle)
-        # ==========================================
-            system_instruction_oracle = getSystemPrompt(bot_id=1)
-
-            combined_input = f"{system_instruction_oracle}\n\nUser: {user_message}"
-
-            response = client_oracle.models.generate_content(
-                model='gemma-3-27b-it',
-                contents=combined_input
-            )
-            
-            return jsonify({"reply": response.text})
+            return jsonify({"error": "Invalid bot_id"}), 400
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
