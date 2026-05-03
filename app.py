@@ -10,7 +10,7 @@ app = Flask(__name__)
 
 CORS(app,resources={
     r"/*": {
-        "origins":"https://olympiadhub-pk.netlify.app"
+        "origins":"*"
     }
 }) 
 
@@ -73,7 +73,7 @@ def chat():
         return jsonify({"error": "No message provided"}), 400
 
     
-    bot_id = data.get("bot_id")
+    bot_id = data.get("bot_id", 1)  # Default to bot 1 (Oracle) if not provided
 
     try:
         # ==========================================
