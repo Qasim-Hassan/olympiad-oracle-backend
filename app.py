@@ -15,8 +15,8 @@ CORS(app,resources={
 }) 
 
 # Securely fetch the API key from the environment variables
-#api_key_oracle = os.environ.get("API_KEY_ORACLE")
-#api_key_tutor = os.environ.get("API_KEY_TUTOR")
+api_key_oracle = os.environ.get("API_KEY_ORACLE")
+api_key_tutor = os.environ.get("API_KEY_TUTOR")
 
 
 # Initialize TWO separate clients
