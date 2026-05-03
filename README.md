@@ -11,7 +11,7 @@ Clone the repository, run:
 
 > pip install -r requirements.txt
 
-to install flask. Then run the app with:
+to install all dependencies required. Then run the app with:
 
 > python app.py
 
