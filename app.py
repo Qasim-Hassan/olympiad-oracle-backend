@@ -85,7 +85,7 @@ def chat():
             combined_input = f"{system_instruction_oracle}\n\nUser: {user_message}"
 
             response = client_oracle.models.generate_content(
-                model='gemma-3-27b-it',
+                model='gemma-4-31b-it',
                 contents=combined_input
             )
             
@@ -104,7 +104,7 @@ def chat():
             combined_input_tutor = f"{system_instruction_tutor}\n\nUser: {user_message}"
             
             response = client_tutor.models.generate_content(
-                model='gemma-3-27b-it',
+                model='gemma-4-31b-it',
                 contents=combined_input_tutor
             )
             
