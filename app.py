@@ -5,14 +5,19 @@ from google import genai
 from google.genai import types
 
 app = Flask(__name__)
-# Allowing frontend website to talk to this backend
-# But making sure only our website can access the backend
 
-CORS(app,resources={
+# ==========================================
+# 1. THE FRONT DOOR BOUNCER (The Guest List)
+# ==========================================
+
+CORS(app, resources={
     r"/*": {
-        "origins":"*"
+        "origins": [
+            "https://olympiadhub-pk.netlify.app", 
+            
+        ]
     }
-}) 
+})
 
 # Securely fetch the API key from the environment variables
 api_key_oracle = os.environ.get("API_KEY_ORACLE")
@@ -25,6 +30,7 @@ try:
     client_tutor = genai.Client(api_key=api_key_tutor)
 except Exception as e:
     print(f"Error initializing AI clients: {e}")
+
 
 def getSystemPrompt(bot_id, subject=None):
     if (bot_id == 1):
@@ -64,8 +70,16 @@ Rules: No direct answers for mistakes, give hints. Format cleanly. If they pass 
 def hello():
     return jsonify({"message":"Hello! Welcome to the site"})
 
-@app.route('/chat', methods=['POST'])
+# ==========================================
+# 2. THE VERCEL STREET GUARD BYPASS
+# ==========================================
+@app.route('/chat', methods=['POST', 'OPTIONS'])
 def chat():
+    # Catch the browser's Preflight CORS request and give it a thumbs up
+    if request.method == 'OPTIONS':
+        return jsonify({"message": "CORS preflight successful"}), 200
+
+    # Proceed with normal POST logic
     data = request.json
     user_message = data.get("message")
 
@@ -91,7 +105,9 @@ def chat():
             
             return jsonify({"reply": response.text})
         
+        # ==========================================
         # BOT 2: AI TUTOR (Uses client_tutor)
+        # ==========================================
         elif (bot_id == 2):
             
             subject = data.get("subject")
