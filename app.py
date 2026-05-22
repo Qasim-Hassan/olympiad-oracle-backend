@@ -13,7 +13,7 @@ app = Flask(__name__)
 CORS(app, resources={
     r"/*": {
         "origins": [
-            "https://exametric.netlify.app", 
+            "*", 
             
         ]
     }
